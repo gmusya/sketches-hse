@@ -4,6 +4,8 @@ project(sketch-hse)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+enable_testing()
+
 include(cmake/BuildFlags.cmake)
 include(cmake/FindBenchmark.cmake)
 include(cmake/FindGTest.cmake)

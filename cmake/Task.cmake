@@ -23,6 +23,8 @@ function(declare_task)
     add_executable(${HW_TESTS} ${TEST_SOURCES} ${CMAKE_SOURCE_DIR}/contrib/gmock_main.cc)
     target_link_libraries(${HW_TESTS} gmock ${HW_SKETCH})
     target_include_directories(${HW_TESTS} PUBLIC ${HW_DIR})
+    add_test(NAME ${HW_NAME} COMMAND ${HW_TESTS})
+    set_tests_properties(${HW_NAME} PROPERTIES WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
     file(GLOB_RECURSE BENCH_SOURCES ${HW_DIR}/bench/*.cpp)
     
