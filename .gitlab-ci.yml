@@ -11,4 +11,6 @@ grade:
     - apt-get update
     - apt-get install -y git python3 python3-pip cmake g++ make libgtest-dev curl
     - python3 -m pip install --break-system-packages manytask-checker
+    - python3 -m pip show manytask-checker || true
+    - python3 -m pip show checker || true
     - checker grade . private-2026-spring --verbose
