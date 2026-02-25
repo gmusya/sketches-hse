@@ -1,0 +1,7 @@
+stages:
+  - grade
+
+grade:
+  stage: grade
+  script:
+    - echo "Configure checker grade pipeline for students here"
