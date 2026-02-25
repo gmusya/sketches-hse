@@ -5,6 +5,7 @@ grade:
   stage: grade
   image: ubuntu:24.04
   script:
+    - apt-get update
     - DEBIAN_FRONTEND=noninteractive apt-get install -y git python3 python3-pip cmake g++ make libgtest-dev curl
     - python3 -m pip install --break-system-packages --upgrade pip
     - python3 -m pip install --break-system-packages manytask-checker
