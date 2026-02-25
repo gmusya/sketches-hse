@@ -1,1 +1,6 @@
 version: 1
+
+parameters:
+  run_testing: true
+  test_target: test_apb_public
+  test_name: apb_public
