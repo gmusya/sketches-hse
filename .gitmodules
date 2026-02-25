@@ -1,0 +1,3 @@
+[submodule "private-2026-spring"]
+	path = private-2026-spring
+	url = ../private-2026-spring.git
