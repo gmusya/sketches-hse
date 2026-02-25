@@ -7,7 +7,6 @@ grade:
   script:
     - apt-get update
     - apt-get install -y git python3 python3-pip cmake g++ make libgtest-dev curl
-    - python3 -m pip install --break-system-packages --upgrade pip
     - python3 -m pip install --break-system-packages manytask-checker
     - git clone --depth 1 "https://gitlab.aysumg.ru/sketches/private-2026-spring.git" ./private_ref
     - checker grade . ./private_ref --verbose
