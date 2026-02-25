@@ -1,6 +1,3 @@
-variables:
-  GIT_SUBMODULE_STRATEGY: recursive
-
 stages:
   - grade
 
@@ -13,4 +10,5 @@ grade:
     - python3 -m pip install --break-system-packages --ignore-installed "git+https://github.com/manytask/checker.git@main"
     - python3 -m pip show manytask-checker || true
     - python3 -m pip show checker || true
-    - checker grade . private-2026-spring --verbose
+    - git clone --depth 1 "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.aysumg.ru/sketches/private-2026-spring.git" ./private_ref
+    - checker grade . ./private_ref --verbose
