@@ -1,0 +1,6 @@
+version: 1
+
+parameters:
+  run_testing: true
+  test_target: test_distinct
+  test_name: distinct

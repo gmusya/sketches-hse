@@ -12,3 +12,4 @@ include(cmake/FindGTest.cmake)
 include(cmake/Task.cmake)
 
 add_subdirectory(01-intro)
+add_subdirectory(02-distinct)
