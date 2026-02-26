@@ -7,7 +7,109 @@
 
 namespace sketch {
 
-TEST(Distinct, Simple) {
+TEST(Distinct, Empty) {
+  DistinctSketch sketch(DistinctSketch::Parameters{.memory_limit_bytes = 100 * sizeof(uint64_t)});
+
+  ASSERT_EQ(sketch.Estimate(), 0);
+}
+
+// this test is correct only for kmv sketch
+#if 0
+TEST(Distinct, SmallNumberOfElements) {
+  constexpr uint64_t kDistinctElements = 100;
+  constexpr uint64_t kAllowedElements = kDistinctElements + 1;
+
+  DistinctSketch sketch(DistinctSketch::Parameters{.memory_limit_bytes = kAllowedElements * sizeof(uint64_t)});
+
+  for (uint64_t i = 1; i <= kDistinctElements; ++i) {
+    sketch.Append(i);
+    ASSERT_EQ(sketch.Estimate(), i);
+  }
+}
+#endif
+
+TEST(Distinct, LargeNumberOfElements) {
+  constexpr uint64_t kDistinctElements = 100'000;
+  constexpr uint64_t kAllowedElements = 40;
+
+  DistinctSketch sketch(DistinctSketch::Parameters{.memory_limit_bytes = kAllowedElements * sizeof(uint64_t)});
+
+  for (uint64_t i = 1; i <= kDistinctElements; ++i) {
+    sketch.Append(i);
+  }
+
+  double estimate = sketch.Estimate();
+  ASSERT_LE(kDistinctElements / 10, estimate);
+  ASSERT_LE(estimate, kDistinctElements * 10);
+}
+
+TEST(Distinct, Serde) {
+  constexpr uint64_t kDistinctElements = 100'000;
+  constexpr uint64_t kAllowedElements = 40;
+
+  constexpr uint64_t kBytesLimit = kAllowedElements * sizeof(uint64_t);
+
+  std::optional<DistinctSketch> sketch(
+      DistinctSketch::Parameters{.memory_limit_bytes = kBytesLimit});
+
+  for (uint64_t i = 1; i <= kDistinctElements; ++i) {
+    sketch->Append(i);
+    double old_estimate = sketch->Estimate();
+
+    std::vector<uint8_t> bytes = sketch->ToBytes();
+    ASSERT_LE(bytes.size(), kBytesLimit + 100);
+
+    sketch.emplace(DistinctSketch::FromBytes(bytes));
+
+    ASSERT_EQ(bytes, sketch->ToBytes());
+
+    double new_estimate = sketch->Estimate();
+    ASSERT_EQ(old_estimate, new_estimate);
+  }
+
+  double estimate = sketch->Estimate();
+  ASSERT_LE(kDistinctElements / 10, estimate);
+  ASSERT_LE(estimate, kDistinctElements * 10);
+}
+
+TEST(Distinct, EstimateIsMonotonic) {
+  constexpr uint64_t kDistinctElements = 100'000;
+  constexpr uint64_t kAllowedElements = 4;
+
+  DistinctSketch sketch(DistinctSketch::Parameters{.memory_limit_bytes = kAllowedElements * sizeof(uint64_t)});
+
+  std::vector<double> estimate;
+
+  for (uint64_t i = 1; i <= kDistinctElements; ++i) {
+    sketch.Append(i);
+    estimate.emplace_back(sketch.Estimate());
+  }
+
+  for (uint64_t i = 0; i + 1 < estimate.size(); ++i) {
+    ASSERT_LE(estimate[i], estimate[i + 1]);
+  }
+}
+
+TEST(Distinct, DuplicatesDoNotAffectEstimate) {
+  constexpr uint64_t kDistinctElements = 100'000;
+  constexpr uint64_t kAllowedElements = 4;
+
+  DistinctSketch sketch(DistinctSketch::Parameters{.memory_limit_bytes = kAllowedElements * sizeof(uint64_t)});
+
+  std::mt19937 rnd(2101);
+
+  for (uint64_t i = 1; i <= kDistinctElements; ++i) {
+    sketch.Append(i);
+    while (rnd() & 1) {
+      double old_estimate = sketch.Estimate();
+      sketch.Append((rnd() % i) + 1);
+      double new_estimate = sketch.Estimate();
+      ASSERT_EQ(old_estimate, new_estimate);
+    }
+  }
+}
+
+TEST(Distinct, Errors) {
   struct Configuration {
     uint64_t runs;
     uint64_t allowed_elements;
@@ -31,9 +133,9 @@ TEST(Distinct, Simple) {
     std::vector<double> predictions;
 
     for (uint32_t run = 0; run < runs; ++run) {
-      sketch::DistinctSketch sketch(
-          sketch::DistinctSketch::Parameters{.memory_limit_bytes = allowed_elements * sizeof(uint64_t)});
+      DistinctSketch sketch(DistinctSketch::Parameters{.memory_limit_bytes = allowed_elements * sizeof(uint64_t)});
 
+      std::vector<uint64_t> unique_elements_as_vec;
       std::unordered_set<uint64_t> unique_elements;
       std::mt19937_64 random_value(2101 + run);
       for (uint32_t i = 1; i <= distinct_elements; ++i) {
@@ -69,7 +171,7 @@ TEST(Distinct, Simple) {
   }
 }
 
-TEST(Distinct, SerDe) {
+TEST(Distinct, ErrorsWithSerde) {
   struct Configuration {
     uint64_t allowed_elements;
     uint64_t distinct_elements;
@@ -90,8 +192,8 @@ TEST(Distinct, SerDe) {
     auto run = [&](bool with_serde) -> std::vector<double> {
       std::vector<double> predictions;
 
-      std::optional<sketch::DistinctSketch> sketch(
-          sketch::DistinctSketch::Parameters{.memory_limit_bytes = allowed_elements * sizeof(uint64_t)});
+      std::optional<DistinctSketch> sketch(
+          DistinctSketch::Parameters{.memory_limit_bytes = allowed_elements * sizeof(uint64_t)});
 
       std::unordered_set<uint64_t> unique_elements;
       std::mt19937_64 random_value(2101);
