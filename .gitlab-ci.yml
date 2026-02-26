@@ -1,14 +1,14 @@
 stages:
   - grade
 
+variables:
+  # Override in CI/CD variables with the exact Yandex Container Registry image.
+  CHECKER_BASE_IMAGE: "cr.yandex/${YC_REGISTRY_ID}/checker-base:latest"
+  CHECKER_PRIVATE_REF_DIR: "/opt/private_ref"
+
 grade:
   stage: grade
-  image: ubuntu:24.04
+  image: "${CHECKER_BASE_IMAGE}"
   script:
-    - apt-get update
-    - apt-get install -y git python3 python3-pip cmake g++ make libgtest-dev curl
-    - python3 -m pip install --break-system-packages --ignore-installed "git+https://github.com/manytask/checker.git@main"
-    - python3 -m pip show manytask-checker || true
-    - python3 -m pip show checker || true
-    - git clone --depth 1 "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.aysumg.ru/sketches/private-2026-spring.git" ./private_ref
-    - checker grade . ./private_ref --verbose
+    - test -d "${CHECKER_PRIVATE_REF_DIR}"
+    - checker grade . "${CHECKER_PRIVATE_REF_DIR}" --verbose
