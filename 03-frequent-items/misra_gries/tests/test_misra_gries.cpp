@@ -33,7 +33,7 @@ std::vector<int64_t> Shuffle(std::vector<int64_t> values, uint64_t seed) {
   return values;
 }
 
-TEST(FrequentItems, Simple) {
+TEST(MisraGries, Simple) {
   constexpr uint64_t kMaxElements = 4;
   MisraGriesSketch sketch = CreateSketch(kMaxElements);
 
@@ -68,13 +68,13 @@ TEST(FrequentItems, Simple) {
   }
 }
 
-TEST(FrequentItems, Empty) {
+TEST(MisraGries, Empty) {
   MisraGriesSketch sketch = CreateSketch(4);
   ASSERT_EQ(sketch.Estimate(42), 0);
   ASSERT_TRUE(sketch.Candidates().empty());
 }
 
-TEST(FrequentItems, FitsInMemory) {
+TEST(MisraGries, FitsInMemory) {
   MisraGriesSketch sketch = CreateSketch(8);
   std::unordered_map<int64_t, uint64_t> counters = {{-10, 3}, {5, 1}, {12, 8}, {1024, 2}};
 
@@ -91,7 +91,7 @@ TEST(FrequentItems, FitsInMemory) {
   }
 }
 
-TEST(FrequentItems, SerdePreservesEstimates) {
+TEST(MisraGries, SerdePreservesEstimates) {
   constexpr uint64_t kMaxElements = 5;
   std::optional<MisraGriesSketch> sketch(CreateSketch(kMaxElements));
 
