@@ -1,0 +1,6 @@
+version: 1
+
+parameters:
+  run_testing: true
+  test_target: test_count_min
+  test_name: count_min
