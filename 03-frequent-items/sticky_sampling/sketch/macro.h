@@ -1,0 +1,8 @@
+#pragma once
+
+#include <stdexcept>
+#include <string>
+
+#define THROW_NOT_IMPLEMENTED                                                                    \
+  throw std::runtime_error("[" + std::string(__FILE__) + ":" + std::to_string(__LINE__) + "] " + \
+                           std::string(__PRETTY_FUNCTION__) + ": not implemented")

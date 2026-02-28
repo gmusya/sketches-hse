@@ -1,2 +1,3 @@
 add_subdirectory(misra_gries)
 add_subdirectory(count_min)
+add_subdirectory(sticky_sampling)
