@@ -20,7 +20,7 @@ OSX тоже должен работать.
      ssh-keygen -N "" -f ~/.ssh/id_rsa
      ```
     * Скопируйте содержимое файла id_rsa.pub (`cat ~/.ssh/id_rsa.pub`) в https://gitlab.aysumg.ru/-/profile/keys
-    * Проверьте, что ssh ключ работает. Выполните команду `ssh git@gitlab.aysumg.ru`. Вы должны увидеть такое приветствие:
+    * Проверьте, что ssh ключ работает. Выполните команду `ssh -p 2224 git@gitlab.aysumg.ru`. Вы должны увидеть такое приветствие:
      ```
      $ ssh git@gitlab.aysumg.ru
      PTY allocation request failed on channel 0
