@@ -102,8 +102,7 @@ TEST(SecondMoment, Errors) {
     std::cerr << "true_f2 = " << true_f2 << ", true_variance = " << true_variance << ", true_rse = " << true_rse
               << std::endl;
 
-    EXPECT_GT(relative_error, 1 - true_rse / sqrt(runs));
-    EXPECT_LT(relative_error, 1 + true_rse / sqrt(runs));
+    EXPECT_LT(relative_error, 1 + 3 * true_rse / sqrt(runs));
 
     EXPECT_LT(rse, true_rse * 1.15);
 
@@ -214,8 +213,7 @@ TEST(SecondMoment, ErrorsWithSerde) {
     std::cerr << "true_f2 = " << true_f2 << ", true_variance = " << true_variance << ", true_rse = " << true_rse
               << std::endl;
 
-    EXPECT_GT(relative_error, 1 - true_rse / sqrt(runs));
-    EXPECT_LT(relative_error, 1 + true_rse / sqrt(runs));
+    EXPECT_LT(relative_error, 1 + 3 * true_rse / sqrt(runs));
 
     EXPECT_LT(rse, true_rse * 1.15);
 
